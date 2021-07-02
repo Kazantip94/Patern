@@ -1,37 +1,51 @@
 interface IProtoType {
-  // interface with clone method
-  clone(): this
-  // The clone is deep or shallow.
-  // It is up to you how you want to implement
-  // the details in your concrete class
+  clone(mode: number): Documents
+}
+class Documents implements IProtoType {
+    name: string
+    array: [number[], number[]]
+
+    constructor(name: string, array: [number[], number[]]) {
+        this.name = name
+        this.array = array
+    }
+    clone(mode: number): Documents {
+        
+        let array
+        if (mode === 2) {
+            array = JSON.parse(JSON.stringify(this.array))
+        } else {
+            array = Object.assign([], this.array)
+        }
+        return new Documents(this.name, array)
+    }
 }
 
-class MyClass implements IProtoType {
-  // A Concrete Class
-  field: number[]
+const ORIGINAL_DOCUMENT = new Documents('Original', [
+  [1, 2, 3, 4],
+  [5, 6, 7, 8],
+])
+console.log(ORIGINAL_DOCUMENT)
 
-  constructor(field: number[]) {
-      this.field = field // any value of any type
-  }
+const DOCUMENT_COPY_1 = ORIGINAL_DOCUMENT.clone(1) 
+DOCUMENT_COPY_1.name = 'Copy 1'
 
-  clone() {
-      return Object.assign({}, this) // shallow copy
-      // return JSON.parse(JSON.stringify(this)); //deep copy
-  }
-}
+DOCUMENT_COPY_1.array[1][2] = 200
+console.log(DOCUMENT_COPY_1)
+console.log(ORIGINAL_DOCUMENT)
+console.log()
 
-// The Client
-// Create an object containing an array
-const OBJECT1 = new MyClass([1, 2, 3, 4])
-console.log(`OBJECT1: ${JSON.stringify(OBJECT1)}`)
+const DOCUMENT_COPY_2 = ORIGINAL_DOCUMENT.clone(1) 
+DOCUMENT_COPY_2.name = 'Copy 2'
 
-const OBJECT2 = OBJECT1.clone() // Clone
-console.log(`OBJECT2: ${JSON.stringify(OBJECT2)}`)
-// Change the value of one of the array elements in OBJECT2
-// Depending on your clone method, either a shallow or deep copy
-// was performed
-OBJECT2.field[1] = 101
+DOCUMENT_COPY_2.array[1] = [9, 10, 11, 12]
+console.log(DOCUMENT_COPY_2)
+console.log(ORIGINAL_DOCUMENT)
+console.log()
 
-// Comparing OBJECT1 and OBJECT2
-console.log(`OBJECT2: ${JSON.stringify(OBJECT2)}`)
-console.log(`OBJECT1: ${JSON.stringify(OBJECT1)}`)
+const DOCUMENT_COPY_3 = ORIGINAL_DOCUMENT.clone(2) 
+DOCUMENT_COPY_3.name = 'Copy 3'
+
+DOCUMENT_COPY_3.array[1][0] = 1234
+console.log(DOCUMENT_COPY_3)
+console.log(ORIGINAL_DOCUMENT)

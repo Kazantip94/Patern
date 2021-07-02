@@ -1,56 +1,64 @@
-// Builder Concept Sample Code
-class Product {
-  parts: string[] = []
+interface IHouseBuilder {
+  house: House
+  setBuildingType(buildingType: string): this
+  setWallMaterial(wallMaterial: string): this
+  setNumberDoors(number: number): this
+  setNumberWindows(number: number): this
+  getResult(): House
 }
 
-interface IBuilder {
-  buildPartA(): this
-  buildPartB(): this
-  buildPartC(): this
-  getResult(): Product
-}
-
-class Builder implements IBuilder {
-  // The Concrete Builder
-  product: Product
+class HouseBuilder implements IHouseBuilder {
+  house: House
 
   constructor() {
-      this.product = new Product()
+      this.house = new House()
   }
 
-  buildPartA() {
-      this.product.parts.push('a')
+  setBuildingType(buildingType: string): this {
+      this.house.buildingType = buildingType
       return this
   }
 
-  buildPartB() {
-      this.product.parts.push('b')
+  setWallMaterial(wallMaterial: string): this {
+      this.house.wallMaterial = wallMaterial
       return this
   }
 
-  buildPartC() {
-      this.product.parts.push('c')
+  setNumberDoors(number: number): this {
+      this.house.doors = number
       return this
   }
 
-  getResult() {
-      return this.product
+  setNumberWindows(number: number): this {
+      this.house.windows = number
+      return this
+  }
+
+  getResult(): House {
+      return this.house
+  }
+}
+
+
+class House {
+  doors = 0
+  windows = 0
+  wallMaterial = ''
+  buildingType = ''
+
+  construction(): string {
+      return `This is a ${this.wallMaterial} ${this.buildingType} with ${this.doors} door(s) and ${this.windows} window(s).`
   }
 }
 
 class Director {
-  // The Director, building a complex representation
-
-  static construct() {
-      'Constructs and returns the final product'
-      return new Builder()
-          .buildPartA()
-          .buildPartB()
-          .buildPartC()
+  static construct(): House {
+      return new HouseBuilder()
+          .setBuildingType('')
+          .setWallMaterial('')
+          .setNumberDoors(1)
           .getResult()
   }
 }
 
-// The Client
-const PRODUCT1 = Director.construct()
-console.log(PRODUCT1.parts)
+
