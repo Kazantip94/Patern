@@ -1,6 +1,5 @@
 
-
-export class Singleton {
+class Singleton {
   
   static instance: Singleton
   id: number

@@ -7,7 +7,6 @@ class ToyotaFactory implements AbstractCarFactory {
 	createPremium(): Premium {
 		return new ToyotaPremium()
 	}
-
 	createSport(): Sport {
 		return new ToyotaSport()
 	}
@@ -17,7 +16,6 @@ class LexusFactory implements AbstractCarFactory {
 	createPremium(): Premium {
 		return new LexusPremium()
 	}
-
 	createSport(): Sport {
 		return new LexusSport()
 	}
@@ -25,35 +23,29 @@ class LexusFactory implements AbstractCarFactory {
 
 abstract class Premium {
 	type: string = 'premium'
-
 	wheelPos: string
 
 }
 
 abstract class Sport {
 	type: string = 'sport'
-
 	wheelPos: string
 
 }
 
 class ToyotaPremium extends Premium {
-
 	wheelPos: string = 'right'
 }
 
 class ToyotaSport extends Sport {
-
 	wheelPos: string = 'right'
 }
 
 class LexusPremium extends Premium {
-
 	wheelPos: string = 'left'
 }
 
 class LexusSport extends Sport {
-
 	wheelPos: string = 'left'
 }
 
