@@ -1,50 +1,57 @@
-interface IHandler {
-    
-    handle(payload: number): number
-}
+class Account {
+	name: string
+	incomer: Account
+	balance: number
 
-class Successor1 implements IHandler {
-    
-    handle(payload: number) {
-        console.log(`Successor1 payload = ${payload}`)
-        const test = Math.floor(Math.random() * 2) + 1
-        if (test === 1) {
-            payload += 1
-            payload = new Successor1().handle(payload)
-        } else {
-            payload -= 1
-            payload = new Successor2().handle(payload)
-        }
-        return payload
+	pay(orderPrice) {
+		if (this.canPay(orderPrice)) {
+			console.log(`Paid ${orderPrice} using ${this.name}`);
+		} else if (this.incomer) {
+			console.log(`Cannot pay using ${this.name}`);
+			this.incomer.pay(orderPrice)
+		} else {
+			console.log('Unfortunately, not enough money');
+		}
+	}
+
+	canPay(amount) {
+		return this.balance >= amount;
+	}
+
+	setNext(account) {
+		this.incomer = account;
+	}
+};
+
+class Master extends Account {
+	constructor(balance) {
+		super();
+		this.name = 'Master Card';
+		this.balance = balance;
+  }
+};
+
+class Paypal extends Account {
+	constructor(balance) {
+		super();
+		this.name = 'Paypal';
+		this.balance = balance;
     }
-}
+};
 
-class Successor2 implements IHandler {
-    
-    handle(payload: number) {
-        console.log(`Successor2 payload = ${payload}`)
-        const test = Math.floor(Math.random() * 3) + 1
-        if (test === 1) {
-            payload = payload * 2
-            payload = new Successor1().handle(payload)
-        } else if (test === 2) {
-            payload = payload / 2
-            payload = new Successor2().handle(payload)
-        } 
-        return payload
-    }
-}
+class Qiwi extends Account {
+	constructor(balance) {
+		super();
+		this.name = 'Qiwi';
+		this.balance = balance;
+	}
+};
 
-class Chain {
-    
-    start(payload: number) {
-        
-        return new Successor1().handle(payload)
-    }
-}
+const master = new Master(100);
+const paypal = new Paypal(200);
+const qiwi = new Qiwi(500);
 
-// The Client
-const CHAIN = new Chain()
-const PAYLOAD = 1
-const OUT = CHAIN.start(PAYLOAD)
-console.log(`Finished result = ${OUT}`)
+master.setNext(paypal);
+paypal.setNext(qiwi);
+
+master.pay(438);
