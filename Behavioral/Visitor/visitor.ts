@@ -1,61 +1,63 @@
-interface IVisitor {
-
-    visit(part: Part): void
+interface Auto {
+	accept(operation:AutoOperation)
 }
 
-interface IVisitable {
-    
-    accept(visitor: IVisitor): void
+class Tesla implements Auto {
+	info():void {
+		console.log('It is a Tesla car!')
+	}
+
+	accept(operation:AutoOperation):void {
+		operation.visitTesla(this)
+	}
 }
 
-class Part implements IVisitable {
-    
-    name: string
-    value: number
-    parts: Set<Part>
+class BMW implements Auto {
+	info():void {
+		console.log('It is a BMW car!')
+	}
 
-    constructor(name: string, value: number, parent?: Part) {
-        this.name = name
-        this.value = value
-        this.parts = new Set()
-        if (parent) {
-            parent.parts.add(this)
-        }
-    }
-
-    accept(visitor: IVisitor) {
-        
-        this.parts.forEach((part) => {
-            part.accept(visitor)
-        })
-        visitor.visit(this)
-    }
+	accept(operation:AutoOperation):void {
+		operation.visitBMW(this)
+	}
 }
 
-// The Client
-const Part_A = new Part('A', 101)
-const Part_B = new Part('B', 305, Part_A)
-const Part_C = new Part('C', 185, Part_A)
-const Part_D = new Part('D', -30, Part_B)
+class Audi implements Auto {
+	info():void {
+		console.log('It is a Audi car!')
+	}
 
-class PrintPartNamesVisitor implements IVisitor {
-   
-    visit(part: Part) {
-        console.log(part.name)
-    }
+	accept(operation:AutoOperation):void {
+		operation.visitAudi(this)
+	}
 }
 
-Part_A.accept(new PrintPartNamesVisitor())
-
-class CalculatePartTotalsVisitor implements IVisitor {
-   
-    totalValue = 0
-
-    visit(part: Part) {
-        this.totalValue += part.value
-    }
+interface AutoOperation {
+	visitTesla(tesla:Tesla)
+	visitBMW(bmw:BMW)
+	visitAudi(audi:Audi)
 }
 
-const CALC_TOTALS_VISITOR = new CalculatePartTotalsVisitor()
-Part_A.accept(CALC_TOTALS_VISITOR)
-console.log(CALC_TOTALS_VISITOR.totalValue)
+class Info implements AutoOperation {
+	visitTesla(tesla:Tesla) {
+		tesla.info()
+	}
+
+	visitBMW(bmw:BMW) {
+		bmw.info()
+	}
+
+	visitAudi(audi:Audi) {
+		audi.info()
+	}
+}
+
+let tesla = new Tesla()
+let bmw = new BMW()
+let audi = new Audi()
+
+let info = new Info()
+
+tesla.accept(info)
+bmw.accept(info)
+audi.accept(info)
