@@ -57,6 +57,7 @@ class Director {
           .setBuildingType('')
           .setWallMaterial('')
           .setNumberDoors(1)
+          .setNumberWindows(4)
           .getResult()
   }
 }
