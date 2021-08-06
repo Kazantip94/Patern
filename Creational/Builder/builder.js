@@ -40,11 +40,13 @@ var Director = /** @class */ (function () {
     }
     Director.construct = function () {
         return new HouseBuilder()
-            .setBuildingType('')
-            .setWallMaterial('')
+            .setBuildingType('Home')
+            .setWallMaterial('Standart')
             .setNumberDoors(1)
             .setNumberWindows(4)
             .getResult();
     };
     return Director;
 }());
+var direc = Director.construct();
+console.log(direc.construction());
