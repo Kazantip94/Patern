@@ -1,4 +1,4 @@
-export type dimension = {
+type dimension = {
     height: number
     width: number
     depth: number
