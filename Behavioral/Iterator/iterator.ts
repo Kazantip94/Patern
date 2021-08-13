@@ -1,55 +1,48 @@
-interface IIterator {
-    next(): IAggregate
+class myIterator {
+    private collection: Array<String | Number> = []
+    pos: number
 
-    hasNext(): boolean
-}
-
-class IteratorConcept implements IIterator {
-
-    index: number
-    aggregates: IAggregate[]
-
-    constructor(aggregates: IAggregate[]) {
-        this.index = 0
-        this.aggregates = aggregates
+    constructor(collection: Array<String | Number>) {
+        this.collection = collection
+        this.pos = 0
     }
 
     next() {
-        if (this.index < this.aggregates.length) {
-            const aggregate = this.aggregates[this.index]
-            this.index += 1
-            return aggregate
+        let done = this.pos >= this.collection.length
+        if (!done) {
+            const curPos = this.pos
+            this.pos++
+            return {
+                value: this.collection[curPos],
+                done
+            }
+        } else {
+            return {
+                value: null,
+                done
+            }
         }
-        throw new Error('At End of Iterator')
     }
 
-    hasNext() {
-        return this.index < this.aggregates.length
+    rewind() {
+        this.pos = 0
     }
+
 }
 
-interface IAggregate {
-  
-    method(): void
-}
+let collection = [7, 'bravo', 'jons', 'Hello', 234, 0.3]
 
-class Aggregate implements IAggregate {
-   
-    method(): void {
-        console.log('This method has been invoked')
-    }
-}
+let newIterator = new myIterator(collection)
 
-// The Client
-const AGGREGATES = [
-    new Aggregate(),
-    new Aggregate(),
-    new Aggregate(),
-    new Aggregate(),
-]
-
-const ITERABLE = new IteratorConcept(AGGREGATES)
-
-while (ITERABLE.hasNext()) {
-    ITERABLE.next().method()
-}
+console.log(newIterator.next())
+console.log(newIterator.next())
+console.log(newIterator.rewind())
+console.log(newIterator.next())
+console.log(newIterator.next())
+console.log(newIterator.next())
+console.log(newIterator.next())
+console.log(newIterator.next())
+console.log(newIterator.next())
+console.log(newIterator.next())
+console.log(newIterator.rewind())
+console.log(newIterator.next())

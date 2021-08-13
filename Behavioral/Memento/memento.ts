@@ -1,88 +1,46 @@
-class Memento {
-    state: string
-    constructor(state: string) {
-        this.state = state
-    }
+class EditorMemento {
+	protected content: string
+
+	constructor(content: string) {
+		this.content = content
+	}
+
+	getContent(): string {
+		return this.content
+	}
 }
 
-class Originator {
+class Editor {
+	protected content: string = ''
+	type(words: string): void {
+		this.content = this.content + ' ' + words
+	}
 
-    #state: string
+	getContent(): string {
+		return this.content
+	}
 
-    constructor() {
-        this.#state = ''
-    }
+	save(): EditorMemento {
+		return new EditorMemento(this.content)
+	}
 
-    public get state(): string {
-        return this.#state
-    }
-
-    public set state(value: string) {
-        this.#state = value
-        console.log(`Originator: Set state to '${value}'`)
-    }
-
-    public get memento(): Memento {
-        console.log(
-            'Originator: Providing Memento of state to caretaker.'
-        )
-        return new Memento(this.#state)
-    }
-
-    public set memento(value: Memento) {
-        this.#state = value.state
-        console.log(
-            `Originator: State after restoring from Memento: '${
-                this.#state
-            }'`
-        )
-    }
+	restore(moment: EditorMemento):void {
+		this.content = moment.getContent()
+	}
 }
 
-class CareTaker {
 
-    #originator: Originator
-    #mementos: Memento[]
+let editor = new Editor()
 
-    constructor(originator: Originator) {
-        this.#originator = originator
-        this.#mementos = []
-    }
+editor.type('1- sdfij;dfkgh;lskghskdgl;dfhsj')
+editor.type('2- sdfjkghsdfjkghssu')
 
-    create() {
-       
-        console.log(
-            'CareTaker: Getting a copy of Originators current state'
-        )
-        const memento = this.#originator.memento
-        this.#mementos.push(memento)
-    }
+let saved = editor.save()
 
-    restore(index: number) {
+editor.type('3- sdfghso;eihgw3489tyw34789t5he49p78ty25-')
 
-        console.log('CareTaker: Restoring Originators state from Memento')
-        const memento = this.#mementos[index]
-        this.#originator.memento = memento
-    }
-}
+console.log(editor.getContent())
 
-// The Client
-const ORIGINATOR = new Originator()
-const CARETAKER = new CareTaker(ORIGINATOR)
+editor.restore(saved)
 
-ORIGINATOR.state = 'State #1'
-ORIGINATOR.state = 'State #2'
-
-CARETAKER.create()
-
-ORIGINATOR.state = 'State #3'
-CARETAKER.create()
-
-ORIGINATOR.state = 'State #4'
-console.log(ORIGINATOR.state)
-
-CARETAKER.restore(0)
-console.log(ORIGINATOR.state)
-
-CARETAKER.restore(1)
-console.log(ORIGINATOR.state)
+console.log(editor.getContent())
