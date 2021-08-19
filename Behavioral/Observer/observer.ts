@@ -1,5 +1,5 @@
 class JobPost {
-	protected title: string
+	private title: string
 
 	constructor(title: string) {
 		this.title = title
@@ -11,7 +11,7 @@ class JobPost {
 }
 
 class JobSeeker {
-	protected name: string
+	private name: string
 
 	constructor(name: string) {
 		this.name = name
