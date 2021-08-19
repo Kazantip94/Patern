@@ -1,50 +1,35 @@
-class GameCharacter {
-
-    #position: [number, number] = [0, 0]
-
-    move(movementStyle: IMoveConstructor) {
-     
-        new movementStyle().move(this.#position)
-    }
+interface Strategy {
+	execute(a:number, b:number):number 
 }
 
-interface IMoveConstructor {
-
-    new (): IMove
+class Add implements Strategy {
+	execute(a:number, b:number):number {
+		return a + b
+	}
 }
 
-interface IMove {
-   
-    move(position: [number, number]): void
+class Substract implements Strategy {
+	execute(a:number, b:number):number {
+		return a - b
+	}
 }
 
-class Walking implements IMove {
+class Context {
+	private strategy:Strategy
 
-    move(position: [number, number]) {
-        position[0] += 1
-        console.log(`I am Walking. New position = ${position}`)
-    }
+	constructor(strategy:Strategy= new Add()) {
+		this.strategy = strategy
+	}
+
+	setStrategy(strategy:Strategy):void {
+		this.strategy = strategy
+	}
+
+	execute(a:number, b:number):number {
+		return this.strategy.execute(a, b)
+	}
 }
 
-class Sprinting implements IMove {
+let context = new Context()
 
-    move(position: [number, number]) {
-        position[0] += 2
-        console.log(`I am Running. New position = ${position}`)
-    }
-}
-
-class Crawling implements IMove {
-
-    move(position: [number, number]) {
-        position[0] += 0.5
-        console.log(`I am Crawling. New position = ${position} `)
-    }
-}
-
-// The Client
-const GAME_CHARACTER = new GameCharacter()
-
-GAME_CHARACTER.move(Walking)
-GAME_CHARACTER.move(Sprinting)
-GAME_CHARACTER.move(Crawling)
+console.log(context.execute(15, 23))
