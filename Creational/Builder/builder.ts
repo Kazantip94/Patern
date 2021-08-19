@@ -54,12 +54,16 @@ class House {
 class Director {
   static construct(): House {
       return new HouseBuilder()
-          .setBuildingType('')
-          .setWallMaterial('')
+          .setBuildingType('Home')
+          .setWallMaterial('Standart')
           .setNumberDoors(1)
           .setNumberWindows(4)
           .getResult()
   }
 }
+
+const direc = Director.construct()
+
+console.log(direc.construction())
 
 

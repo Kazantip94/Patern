@@ -1,64 +1,53 @@
-interface IObservable {
+class JobPost {
+	protected title: string
 
-    subscribe(observer: IObserver): void
+	constructor(title: string) {
+		this.title = title
+	}
 
-    unsubscribe(observer: IObserver): void
-
-    notify(...args: unknown[]): void
+	getTitle(): string {
+		return this.title
+	}
 }
 
-class Subject implements IObservable {
-    
-    #observers: Set<IObserver>
-    constructor() {
-        this.#observers = new Set()
-    }
+class JobSeeker {
+	protected name: string
 
-    subscribe(observer: IObserver) {
-        this.#observers.add(observer)
-    }
+	constructor(name: string) {
+		this.name = name
+	}
 
-    unsubscribe(observer: IObserver) {
-        this.#observers.delete(observer)
-    }
-
-    notify(...args: unknown[]) {
-        this.#observers.forEach((observer) => {
-            observer.notify(...args)
-        })
-    }
+	onJobPosted(job: JobPost): void {
+		console.log(`Я, ${this.name} получил уведомлени о появилении новой вакансии: ${job.getTitle()}`)
+	}
 }
 
-interface IObserver {
+class JobPostings {
+	private observers: Array<JobSeeker> = []
 
-    notify(...args: unknown[]): void
+	private notify(job: JobPost): void {
+		for (var i = this.observers.length - 1; i >= 0; i--) {
+			this.observers[i].onJobPosted(job)
+		}
+	}
 
+	attach(observer: JobSeeker): void {
+		this.observers.push(observer)
+	}
+
+	addJob(job: JobPost): void {
+		this.notify(job)
+	}
 }
 
-class Observer implements IObserver {
-    #id: number
+let ivan = new JobSeeker('Иван')
+let petr = new JobSeeker('Петр')
+let zheka = new JobSeeker('Евгений')
 
-    constructor(observable: IObservable) {
-        this.#id = COUNTER++
-        observable.subscribe(this)
-    }
+let jobPostings = new JobPostings()
 
-    notify(...args: unknown[]) {
-        console.log(
-            `OBSERVER_${this.#id} received ${JSON.stringify(args)}`
-        )
-    }
-}
+jobPostings.attach(ivan)
+jobPostings.attach(petr)
+jobPostings.attach(zheka)
 
-// The Client
-let COUNTER = 1 
-
-const SUBJECT = new Subject()
-const OBSERVER_1 = new Observer(SUBJECT)
-const OBSERVER_2 = new Observer(SUBJECT)
-
-SUBJECT.notify('First Notification', [1, 2, 3])
-
-SUBJECT.unsubscribe(OBSERVER_2)
-
-SUBJECT.notify('Second Notification', { A: 1, B: 2, C: 3 })
+jobPostings.addJob(new JobPost('Менеджер по продажам ЗП 13000 грн в день на руки'))

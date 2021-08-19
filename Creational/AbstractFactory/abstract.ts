@@ -66,3 +66,7 @@ let vehicle4 = factory2.createSport()
 
 console.log(vehicle3)
 console.log(vehicle4)
+
+
+console.log(vehicle3)
+console.log(vehicle4)
