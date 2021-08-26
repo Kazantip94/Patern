@@ -1,49 +1,31 @@
-class SubSystemClassA {
-    
-    method(): string {
-        return 'A'
-    }
+class Attack {
+	sendJournalists(): void {
+		console.log("fghfghfg")
+	}
+	stopHelp(): void {
+		console.log('fghfghfghfghfhfghfgh')
+	}
 }
 
-class SubSystemClassB {
-    
-    method(value: string): string {
-        return value
-    }
-}
-
-class SubSystemClassC {
-    
-    method(value: { C: number[] }): { C: number[] } {
-        return value
-    }
+class Defend {
+	buyMedia(): void {
+		console.log("dfdfgdfg123123")
+	}
 }
 
 class Facade {
-   
-    subSystemClassA(): string {
-        
-        return new SubSystemClassA().method()
-    }
+	joinAlliance(): void {
+		new Defend().buyMedia()
+	}
 
-    subSystemClassB(value: string): string {
-        
-        return new SubSystemClassB().method(value)
-    }
-
-    subSystemClassC(value: { C: number[] }): { C: number[] } {
-        
-        return new SubSystemClassC().method(value)
-    }
+	leftAlliance(): void {
+		new Attack().stopHelp()
+		new Attack().sendJournalists()
+		new Defend().buyMedia()
+	}
 }
 
-// The Client
+let uk = new Facade()
 
-console.log(new SubSystemClassA().method())
-console.log(new SubSystemClassB().method('B'))
-console.log(new SubSystemClassC().method({ C: [1, 2, 3] }))
-
-const FACADE = new Facade()
-console.log(FACADE.subSystemClassA())
-console.log(FACADE.subSystemClassB('B'))
-console.log(FACADE.subSystemClassC({ C: [1, 2, 3] }))
+uk.joinAlliance()
+uk.leftAlliance()
