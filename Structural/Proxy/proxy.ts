@@ -1,47 +1,51 @@
-interface ISubject {
-
-    request(): void
-    
+interface Subject {
+    request(): void;
 }
 
-class RealSubject implements ISubject {
-
-    enormousData: number[]
-
-    constructor() {
-        
-        this.enormousData = [1, 2, 3]
-    }
-
-    request() {
-        return this.enormousData
+class RealSubject implements Subject {
+    public request(): void {
+        console.log('RealSubject: Handling request.');
     }
 }
 
-class ProxySubject implements ISubject {
+class ProxySubject implements Subject {
+    private realSubject: RealSubject;
 
-    enormousData: number[]
-    realSubject: RealSubject
-
-    constructor() {
-        this.enormousData = []
-        this.realSubject = new RealSubject()
+    constructor(realSubject: RealSubject) {
+        this.realSubject = realSubject;
     }
-    request() {
-   
-        if (this.enormousData.length === 0) {
-            console.log('pulling data from RealSubject')
-            this.enormousData = this.realSubject.request()
-            return this.enormousData
+
+    public request(): void {
+        if (this.checkAccess()) {
+            this.realSubject.request();
+            this.logAccess();
         }
-        console.log('pulling data from Proxy cache')
-        return this.enormousData
+    }
+
+    private checkAccess(): boolean {
+    
+        console.log('Proxy: Checking access prior to firing a real request.');
+
+        return true;
+    }
+
+    private logAccess(): void {
+        console.log('Proxy: Logging the time of request.');
     }
 }
 
-// The Client
-const PROXY_SUBJECT = new ProxySubject()
+function clientCode(subject: Subject) {
+  
+    subject.request();
 
-console.log(PROXY_SUBJECT.request())
+}
 
-console.log(PROXY_SUBJECT.request())
+console.log('Client: Executing the client code with a real subject:');
+const realSubject = new RealSubject();
+clientCode(realSubject);
+
+console.log('');
+
+console.log('Client: Executing the same client code with a proxy:');
+const proxy = new ProxySubject(realSubject);
+clientCode(proxy);
