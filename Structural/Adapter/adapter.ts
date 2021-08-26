@@ -1,95 +1,45 @@
-interface ICubeA {
-    manufacture(width: number, height: number, depth: number): boolean
-}
-
-class CubeA implements ICubeA {
-    static last_time = Date.now()
-
-    manufacture(width: number, height: number, depth: number): boolean {
-      
-        const now = Date.now()
-        if (now > CubeA.last_time + 1500) {
-            console.log(
-                `Company A built Cube with dimensions ${width}x${height}x${depth}`
-            )
-            CubeA.last_time = now
-            return true
-        }
-        return false 
+class Target {
+    public request(): string {
+        return 'Target: The default target\'s behavior.';
     }
 }
 
-interface ICubeB {
-    create(
-        top_left_front: [number, number, number],
-        bottom_right_back: [number, number, number]
-    ): boolean
-}
-
-class CubeB implements ICubeB {
-    static last_time = Date.now()
-
-    create(
-        top_left_front: [number, number, number],
-        bottom_right_back: [number, number, number]
-    ): boolean {
-      
-        const now = Date.now()
-        if (now > CubeB.last_time + 3000) {
-            console.log(
-                `Company B built Cube with coords [${top_left_front[0]},${top_left_front[1]},${top_left_front[2]}],[${bottom_right_back[0]},${bottom_right_back[1]},${bottom_right_back[2]}]`
-            )
-            CubeB.last_time = now
-            return true
-        } else {
-            return false 
-        }
+class Adaptee {
+    public specificRequest(): string {
+        return '.eetpadA eht fo roivaheb laicepS';
     }
 }
 
-class CubeBAdapter implements ICubeA {
-    #cube: CubeB
+class Adapter extends Target {
+    private adaptee: Adaptee;
 
-    constructor() {
-        this.#cube = new CubeB()
+    constructor(adaptee: Adaptee) {
+        super();
+        this.adaptee = adaptee;
     }
 
-    manufacture(width: number, height: number, depth: number): boolean {
-        const success = this.#cube.create(
-            [0 - width / 2, 0 - height / 2, 0 - depth / 2],
-            [0 + width / 2, 0 + height / 2, 0 + depth / 2]
-        )
-        return success
+    public request(): string {
+        const result = this.adaptee.specificRequest().split('').reverse().join('');
+        return `Adapter: (TRANSLATED) ${result}`;
     }
 }
 
-const totalCubes = 5
-let counter = 0
-
-const manufactureCube = () => {
-    const width = Math.floor(Math.random() * 10) + 1
-    const height = Math.floor(Math.random() * 10) + 1
-    const depth = Math.floor(Math.random() * 10) + 1
-    let cube = new CubeA()
-    let success = cube.manufacture(width, height, depth)
-    if (success) {
-        counter = counter + 1
-    } else {
-        console.log('Company A was busy, so trying company B')
-        cube = new CubeBAdapter()
-        success = cube.manufacture(width, height, depth)
-        if (success) {
-            counter = counter + 1
-        } else {
-            console.log('Company B was busy, so trying company A')
-        }
-    }
+function clientCode(target: Target) {
+    console.log(target.request());
 }
 
-const interval = setInterval(() => {
-    manufactureCube()
-    if (counter >= totalCubes) {
-        clearInterval(interval)
-        console.log(`${totalCubes} cubes have been manufactured`)
-    }
-}, 1000)
+console.log('Client: I can work just fine with the Target objects:');
+const target = new Target();
+clientCode(target);
+
+console.log('');
+
+const adaptee = new Adaptee();
+console.log('Client: The Adaptee class has a weird interface. See, I don\'t understand it:');
+console.log(`Adaptee: ${adaptee.specificRequest()}`);
+
+console.log('');
+
+console.log('Client: But I can work with it via the Adapter:');
+const adapter = new Adapter(adaptee);
+clientCode(adapter);
