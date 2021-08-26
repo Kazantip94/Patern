@@ -1,46 +1,119 @@
-class EditorMemento {
-	protected content: string
+class Originator {
 
-	constructor(content: string) {
-		this.content = content
-	}
+    private state: string;
 
-	getContent(): string {
-		return this.content
-	}
+    constructor(state: string) {
+        this.state = state;
+        console.log(`Originator: My initial state is: ${state}`);
+    }
+
+    public doSomething(): void {
+        console.log('Originator: I\'m doing something important.');
+        this.state = this.generateRandomString(30);
+        console.log(`Originator: and my state has changed to: ${this.state}`);
+    }
+
+    private generateRandomString(length: number = 10): string {
+        const charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        return Array
+            .apply(null, { length })
+            .map(() => charSet.charAt(Math.floor(Math.random() * charSet.length)))
+            .join('');
+    }
+
+    public save(): Memento {
+        return new ConcreteMemento(this.state);
+    }
+
+    public restore(memento: Memento): void {
+        this.state = memento.getState();
+        console.log(`Originator: My state has changed to: ${this.state}`);
+    }
 }
 
-class Editor {
-	protected content: string = ''
-	type(words: string): void {
-		this.content = this.content + ' ' + words
-	}
+interface Memento {
+    getState(): string;
 
-	getContent(): string {
-		return this.content
-	}
+    getName(): string;
 
-	save(): EditorMemento {
-		return new EditorMemento(this.content)
-	}
+    getDate(): string;
+}
 
-	restore(moment: EditorMemento):void {
-		this.content = moment.getContent()
-	}
+class ConcreteMemento implements Memento {
+    private state: string;
+
+    private date: string;
+
+    constructor(state: string) {
+        this.state = state;
+        this.date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    }
+
+    public getState(): string {
+        return this.state;
+    }
+
+    public getName(): string {
+        return `${this.date} / (${this.state.substr(0, 9)}...)`;
+    }
+
+    public getDate(): string {
+        return this.date;
+    }
 }
 
 
-let editor = new Editor()
+class Caretaker {
+    private mementos: Memento[] = [];
 
-editor.type('1- sdfij;dfkgh;lskghskdgl;dfhsj')
-editor.type('2- sdfjkghsdfjkghssu')
+    private originator: Originator;
 
-let saved = editor.save()
+    constructor(originator: Originator) {
+        this.originator = originator;
+    }
 
-editor.type('3- sdfghso;eihgw3489tyw34789t5he49p78ty25-')
+    public backup(): void {
+        console.log('\nCaretaker: Saving Originator\'s state...');
+        this.mementos.push(this.originator.save());
+    }
 
-console.log(editor.getContent())
+    public undo(): void {
+        if (!this.mementos.length) {
+            return;
+        }
+        const memento = this.mementos.pop();
 
-editor.restore(saved)
+        console.log(`Caretaker: Restoring state to: ${memento.getName()}`);
+        this.originator.restore(memento);
+    }
 
-console.log(editor.getContent())
+    public showHistory(): void {
+        console.log('Caretaker: Here\'s the list of mementos:');
+        for (const memento of this.mementos) {
+            console.log(memento.getName());
+        }
+    }
+}
+
+
+const originator = new Originator('Super-duper-super-puper-super.');
+const caretaker = new Caretaker(originator);
+
+caretaker.backup();
+originator.doSomething();
+
+caretaker.backup();
+originator.doSomething();
+
+caretaker.backup();
+originator.doSomething();
+
+console.log('');
+caretaker.showHistory();
+
+console.log('\nClient: Now, let\'s rollback!\n');
+caretaker.undo();
+
+console.log('\nClient: Once more!\n');
+caretaker.undo();
