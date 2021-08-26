@@ -1,70 +1,50 @@
-interface IValue {
-    value: number
+ interface Component {
+    operation(): string;
 }
 
-class _Value implements IValue {
-    value: number
-    constructor(value: number) {
-        this.value = value
+class Delivery implements Component {
+    public operation(): string {
+        return 'DeliveryComponent';
     }
 }
 
-function Value(value: number): IValue {
-    return new _Value(value)
-}
+class Decorator implements Component {
+    protected component: Component;
 
-class _Add implements IValue {
-    value: number
-    constructor(val1: IValue | number, val2: IValue | number) {
-        const left = Object.prototype.hasOwnProperty.call(val1, 'value')
-            ? (val1 as IValue).value
-            : (val1 as number)
-        const right = Object.prototype.hasOwnProperty.call(val2, 'value')
-            ? (val2 as IValue).value
-            : (val2 as number)
-        this.value = left + right
+    constructor(component: Component) {
+        this.component = component;
+    }
+
+    public operation(): string {
+        return this.component.operation();
     }
 }
 
-function Add(
-    val1: IValue | number,
-    val2: IValue | number
-): IValue {
-    return new _Add(val1, val2)
-}
+class Product1 extends Decorator {
 
-class _Sub implements IValue {
-    value: number
-    constructor(val1: IValue | number, val2: IValue | number) {
-        const left = Object.prototype.hasOwnProperty.call(val1, 'value')
-            ? (val1 as IValue).value
-            : (val1 as number)
-        const right = Object.prototype.hasOwnProperty.call(val2, 'value')
-            ? (val2 as IValue).value
-            : (val2 as number)
-        this.value = left - right
+    public operation(): string {
+        return `Product1Component(${super.operation()})`;
     }
 }
 
-function Sub(
-    val1: IValue | number,
-    val2: IValue | number
-): IValue {
-    return new _Sub(val1, val2)
+class Product2 extends Decorator {
+    public operation(): string {
+        return `Product2Component(${super.operation()})`;
+    }
 }
 
-const A = Value(1)
-const B = Value(2)
-const C = Value(5)
+function clientCode(component: Component) {
 
-console.log(Add(A, B).value)
-console.log(Add(A, 100).value)
-console.log(Sub(C, A).value)
-console.log(Sub(Add(C, B), A).value)
-console.log(Sub(100, 101).value)
-console.log(Add(Sub(Add(C, B), A), 100).value)
-console.log(Sub(123, Add(C, C)).value)
-console.log(Add(Sub(Add(C, 10), A), 100).value)
-console.log(A.value)
-console.log(B.value)
-console.log(C.value)
+    console.log(`RESULT: ${component.operation()}`);
+   
+}
+
+const simple = new Delivery();
+console.log('Client: I\'ve got a simple component:');
+clientCode(simple);
+console.log('');
+
+const decorator1 = new Product1(simple);
+const decorator2 = new Product2(decorator1);
+console.log('Client: Now I\'ve got a decorated component:');
+clientCode(decorator2);
