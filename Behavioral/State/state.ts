@@ -9,7 +9,7 @@ interface IExampleState {
     request(): void
 }
 
-class StateContext {
+class StateContext implements IExampleState{
     #state: ExampleState
 
     constructor() {
