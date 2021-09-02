@@ -1,76 +1,51 @@
-class Flyweight {
-    private sharedState: any;
+interface Flyweight {
+    operation(s: String): void;
+}
 
-    constructor(sharedState: any) {
-        this.sharedState = sharedState;
+class ConcreteFlyweight implements Flyweight {
+    private instrinsicState: String;
+
+    constructor(instrinsicState: String) {
+        this.instrinsicState = instrinsicState;
     }
 
-    public operation(uniqueState): void {
-        const s = JSON.stringify(this.sharedState);
-        const u = JSON.stringify(uniqueState);
-        console.log(`Flyweight: Displaying shared (${s}) and unique (${u}) state.`);
+    public operation(s: String): void {
+        console.log("`operation` of ConcreteFlyweight", s, " is being called!");
+    }
+}
+
+class UnsharedConcreteFlyweight implements Flyweight {
+    private allState: number;
+
+    constructor(allState: number) {
+        this.allState = allState;
+    }
+
+    public operation(s: String): void {
+        console.log("`operation` of UnsharedConcreteFlyweight", s, " is being called!");
     }
 }
 
 class FlyweightFactory {
-    private flyweights: {[key: string]: Flyweight} = <any>{};
 
-    constructor(initialFlyweights: string[][]) {
-        for (const state of initialFlyweights) {
-            this.flyweights[this.getKey(state)] = new Flyweight(state);
+    private fliesMap: { [s: string]: Flyweight; } = <any>{};
+
+    public getFlyweight(key: string): Flyweight {
+
+        if (this.fliesMap[key] === undefined || null) {
+            this.fliesMap[key] = new ConcreteFlyweight(key);
         }
-    }
-
-    private getKey(state: string[]): string {
-        return state.join('_');
-    }
-
-    public getFlyweight(sharedState: string[]): Flyweight {
-        const key = this.getKey(sharedState);
-
-        if (!(key in this.flyweights)) {
-            console.log('FlyweightFactory: Can\'t find a flyweight, creating new one.');
-            this.flyweights[key] = new Flyweight(sharedState);
-        } else {
-            console.log('FlyweightFactory: Reusing existing flyweight.');
-        }
-
-        return this.flyweights[key];
-    }
-
-    public listFlyweights(): void {
-        const count = Object.keys(this.flyweights).length;
-        console.log(`\nFlyweightFactory: I have ${count} flyweights:`);
-        for (const key in this.flyweights) {
-            console.log(key);
-        }
+        return this.fliesMap[key];
     }
 }
 
-class addCarToPoliceDatabase {
-
-    constructor(ff: FlyweightFactory, plates: string, owner: string,
-        brand: string, model: string, color: string) {
-
-            console.log('\nClient: Adding a car to database.');
-
-            const flyweight = ff.getFlyweight([brand, model, color]);
-
-            flyweight.operation([plates, owner]);
-    }
-}
-
-const factory = new FlyweightFactory([
-    ['Chevrolet', 'Camaro2018', 'pink'],
-    ['Mercedes Benz', 'C300', 'black'],
-    ['Mercedes Benz', 'C500', 'red'],
-    ['BMW', 'M5', 'red'],
-    ['BMW', 'X6', 'white'],
-]);
-factory.listFlyweights();
-
-const addCar = new addCarToPoliceDatabase(factory, 'CL234IR', 'James Doe', 'BMW', 'M5', 'red');
-
-const addCar1 = new addCarToPoliceDatabase(factory, 'CL234IR', 'James Doe', 'BMW', 'X1', 'red');
-
-factory.listFlyweights();
+function show() : void {
+    var factory: FlyweightFactory = new FlyweightFactory(),
+   
+    conc1: ConcreteFlyweight = <ConcreteFlyweight>factory.getFlyweight("conc1"),
+    conc2: ConcreteFlyweight = <ConcreteFlyweight>factory.getFlyweight("conc2");
+   
+    conc1.operation("1");
+    conc2.operation("2");
+   }
+   show();
